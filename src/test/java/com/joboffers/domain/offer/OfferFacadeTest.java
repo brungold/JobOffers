@@ -11,11 +11,11 @@ import java.util.List;
 class OfferFacadeTest {
     @Test
     public void should_fetch_offers_and_save_them_all_when_repository_is_empty() {
-        //when
+        //given
         OfferFacade offerFacade = new OfferFacadeTestConfiguration().offerFacadeForTests();
         assertThat(offerFacade.findAllOffers()).isEmpty();
 
-        //given
+        //when
         List<OfferResponseDto> result = offerFacade.fetchAllOffersAndSaveAllIfNotExists();
 
         //then
@@ -24,7 +24,22 @@ class OfferFacadeTest {
 
     @Test
     public void should_find_offer_by_id_when_offer_existed() {
+        //given
+        OfferFacade offerFacade = new OfferFacadeTestConfiguration().offerFacadeForTests();
+        OfferResponseDto offerResponseDto = offerFacade.saveOffer(new OfferRequestDto("Google", "Junior", "6000", "www.someurl1.com/1"));
 
+        //when
+        OfferResponseDto offerFindById = offerFacade.findOfferById(offerResponseDto.id());
+
+        //then
+        assertThat(offerFindById).isEqualTo(OfferResponseDto.builder()
+                .id(offerFindById.id())
+                .companyName("Google")
+                .position("Junior")
+                .salary("6000")
+                .offerUrl("www.someurl1.com/1")
+                .build()
+        );
     }
 
     @Test
