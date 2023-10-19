@@ -1,7 +1,6 @@
 package com.joboffers;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import com.joboffers.domain.JobOffersSpringBootApplication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
