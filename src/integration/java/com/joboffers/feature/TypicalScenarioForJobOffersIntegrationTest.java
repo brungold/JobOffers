@@ -2,22 +2,24 @@ package com.joboffers.feature;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.joboffers.BaseIntegrationTest;
+import com.joboffers.SampleJobOfferResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationTest {
+public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOfferResponse {
 
     @Test
     public void should_go_through_the_job_offers_application() {
-        // step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
+        // step 1: there are no offers in external HTTP server
+        // (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
         // given
         wireMockServer.stubFor(WireMock.get("/offers")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
-                        .withBody("Junior", "Google", "6000 PLN", "www.work-offer/google.com")
-                ));
+                        .withBody(bodyWithZeroOffersJson())));
         // when
+
         // then
 
 

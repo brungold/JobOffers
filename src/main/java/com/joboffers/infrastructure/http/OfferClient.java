@@ -5,10 +5,7 @@ import com.joboffers.domain.offer.dto.JobOfferResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -29,11 +26,15 @@ public class OfferClient implements OfferFetchable {
     public List<JobOfferResponse> fetchAllOffers() {
         log.info("Started fetching offers using http client");
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         final HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
         try {
             String uriForService = getUrlForService("/offers");
             final String url = UriComponentsBuilder.fromHttpUrl(uriForService).toUriString();
-            ResponseEntity<List<JobOfferResponse>> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+            ResponseEntity<List<JobOfferResponse>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    requestEntity,
                     new ParameterizedTypeReference<>() {
                     });
             final List<JobOfferResponse> body = response.getBody();
@@ -48,6 +49,7 @@ public class OfferClient implements OfferFetchable {
             return Collections.emptyList();
         }
     }
+
 
     private String getUrlForService(String service) {
         return uri + ":" + port + service;
