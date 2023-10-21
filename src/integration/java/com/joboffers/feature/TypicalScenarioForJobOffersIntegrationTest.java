@@ -3,11 +3,18 @@ package com.joboffers.feature;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.joboffers.BaseIntegrationTest;
 import com.joboffers.SampleJobOfferResponse;
+import com.joboffers.domain.offer.OfferFetchable;
+import com.joboffers.domain.offer.dto.JobOfferResponse;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
 
 public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOfferResponse {
 
+    @Autowired
+    OfferFetchable offerClient;
     @Test
     public void should_go_through_the_job_offers_application() {
         // step 1: there are no offers in external HTTP server
@@ -18,6 +25,7 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
                         .withBody(bodyWithZeroOffersJson())));
+        List<JobOfferResponse> jobOfferResponses = offerClient.fetchAllOffers();
         // when
 
         // then
