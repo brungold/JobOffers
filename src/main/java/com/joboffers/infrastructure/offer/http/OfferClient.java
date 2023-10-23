@@ -25,33 +25,49 @@ public class OfferClient implements OfferFetchable {
     @Override
     public List<JobOfferResponse> fetchAllOffers() {
         log.info("Started fetching offers using http client");
+
+        HttpHeaders headers = createHeader();
+        final HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
+
+        String uriForService = getUrlForService("/offers");
+        final String url = UriComponentsBuilder.fromHttpUrl(uriForService).toUriString();
+
+        ResponseEntity<List<JobOfferResponse>> response = makeGetRequest(requestEntity, url);
+        return handleResponse(response);
+    }
+
+    private static HttpHeaders createHeader() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        final HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
+        return headers;
+    }
+
+    private String getUrlForService(String service) {
+        return uri + ":" + port + service;
+    }
+
+    private ResponseEntity<List<JobOfferResponse>> makeGetRequest(HttpEntity<HttpHeaders> requestEntity, String url) {
         try {
-            String uriForService = getUrlForService("/offers");
-            final String url = UriComponentsBuilder.fromHttpUrl(uriForService).toUriString();
             ResponseEntity<List<JobOfferResponse>> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
                     requestEntity,
                     new ParameterizedTypeReference<>() {
                     });
-            final List<JobOfferResponse> body = response.getBody();
-            if (body == null) {
-                log.info("Response Body was null returning empty list");
-                return Collections.emptyList();
-            }
-            log.info("Success Response Body Returned: " + body);
-            return body;
+            return response;
         } catch (ResourceAccessException e) {
             log.error("Error while fetching offers using http client: " + e.getMessage());
-            return Collections.emptyList();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
     }
 
-
-    private String getUrlForService(String service) {
-        return uri + ":" + port + service;
+    private static List<JobOfferResponse> handleResponse(ResponseEntity<List<JobOfferResponse>> response) {
+        final List<JobOfferResponse> body = response.getBody();
+        if (body == null) {
+            log.info("Response Body was null returning empty list");
+            return Collections.emptyList();
+        }
+        log.info("Success Response Body Returned: " + body);
+        return body;
     }
 }
