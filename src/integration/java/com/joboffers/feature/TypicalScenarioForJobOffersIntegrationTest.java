@@ -5,6 +5,7 @@ import com.joboffers.BaseIntegrationTest;
 import com.joboffers.SampleJobOfferResponse;
 import com.joboffers.domain.offer.OfferFetchable;
 import com.joboffers.domain.offer.dto.JobOfferResponse;
+import com.joboffers.domain.offer.dto.OfferResponseDto;
 import com.joboffers.infrastructure.offer.scheduler.OfferHttpScheduler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import java.time.Duration;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOfferResponse {
@@ -27,15 +29,14 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
-                        .withBody(bodyWithZeroOffersJson())));
+                        .withBody(bodyWithFourOffersJson())));
 
 
         // step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
-        await().
-                atMost(Duration.ofSeconds(20))
-                .until(() -> false);
-
-//        offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
+        //given & when
+        List<OfferResponseDto> newOffers = offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
+        //then
+        assertThat(newOffers).hasSize(4);
 
 
         // step 3: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned UNAUTHORIZED(401)
