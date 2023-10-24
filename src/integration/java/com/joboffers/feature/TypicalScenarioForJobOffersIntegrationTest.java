@@ -5,6 +5,7 @@ import com.joboffers.BaseIntegrationTest;
 import com.joboffers.SampleJobOfferResponse;
 import com.joboffers.domain.offer.OfferFetchable;
 import com.joboffers.domain.offer.dto.JobOfferResponse;
+import com.joboffers.infrastructure.offer.scheduler.OfferHttpScheduler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,31 +18,24 @@ import static org.awaitility.Awaitility.await;
 public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOfferResponse {
 
     @Autowired
-    OfferFetchable offerClient;
+    OfferHttpScheduler offerHttpScheduler;
     @Test
     public void should_go_through_the_job_offers_application() {
         // step 1: there are no offers in external HTTP server
         // (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
-        // given
         wireMockServer.stubFor(WireMock.get("/offers")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
                         .withBody(bodyWithZeroOffersJson())));
-        List<JobOfferResponse> jobOfferResponses = offerClient.fetchAllOffers();
 
 
         // step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
-        //given
+        await().
+                atMost(Duration.ofSeconds(20))
+                .until(() -> false);
 
-        // when
-        await()
-                .atMost(Duration.ofSeconds(20))
-                .pollInterval(Duration.ofSeconds(1))
-                .until(
-                        () -> true
-                );
-        // then
+//        offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
 
 
         // step 3: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned UNAUTHORIZED(401)
