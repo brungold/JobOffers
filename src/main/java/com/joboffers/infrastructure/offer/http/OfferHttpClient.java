@@ -15,7 +15,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Log4j2
-public class OfferClient implements OfferFetchable {
+public class OfferHttpClient implements OfferFetchable {
 
     private final RestTemplate restTemplate;
     private final String uri;
