@@ -70,7 +70,16 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         // step 8: there are 2 new offers in external HTTP server
         // step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
         // step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers with ids: 1000 and 2000
+
+
         // step 11: user made GET /offers/9999 and system returned NOT_FOUND(404) with message “Offer with id 9999 not found”
+        //given
+        //when
+        ResultActions performGetOffersWithNotExistingId = mockMvc.perform(get("/offers" + notExistingId);
+        //then
+        performGetOffersWithNotExistingId.andExpect(status().isNotFound())
+                .andExpect(content().j))
+
         // step 12: user made GET /offers/1000 and system returned OK(200) with offer
         // step 13: there are 2 new offers in external HTTP server
         // step 14: scheduler ran 3rd time and made GET to external server and system added 2 new offers with ids: 3000 and 4000 to database
