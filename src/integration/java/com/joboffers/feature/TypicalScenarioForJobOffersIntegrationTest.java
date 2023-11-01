@@ -16,15 +16,15 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOfferResponse {
 
     @Autowired
     OfferHttpScheduler offerHttpScheduler;
+
     @Test
     public void should_go_through_the_job_offers_application() throws Exception {
         // step 1: there are no offers in external HTTP server
@@ -74,11 +74,18 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
 
         // step 11: user made GET /offers/9999 and system returned NOT_FOUND(404) with message “Offer with id 9999 not found”
         //given
+        String notExistingId = "9999";
         //when
-        ResultActions performGetOffersWithNotExistingId = mockMvc.perform(get("/offers" + notExistingId);
+        ResultActions performGetOffersWithNotExistingId = mockMvc.perform(get("/offers/" + notExistingId));
         //then
         performGetOffersWithNotExistingId.andExpect(status().isNotFound())
-                .andExpect(content().j))
+                .andExpect(content().json("""
+                        {
+                        "message": "Offer with id 9999 not found",
+                        "status": "NOT_FOUND"
+                        }
+                        """.trim()
+                ));
 
         // step 12: user made GET /offers/1000 and system returned OK(200) with offer
         // step 13: there are 2 new offers in external HTTP server
