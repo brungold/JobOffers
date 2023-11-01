@@ -1,5 +1,6 @@
 package com.joboffers.feature;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.joboffers.BaseIntegrationTest;
 import com.joboffers.SampleJobOfferResponse;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
@@ -32,14 +34,14 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
-                        .withBody(bodyWithFourOffersJson())));
+                        .withBody(bodyWithZeroOffersJson())));
 
 
         // step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
         //given & when
         List<OfferResponseDto> newOffers = offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
         //then
-        assertThat(newOffers).hasSize(4);
+        assertThat(newOffers).hasSize(0);
 
 
         // step 3: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned UNAUTHORIZED(401)
@@ -59,8 +61,11 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         ResultActions perform = mockMvc.perform(get(offerUrl)
                 .contentType(MediaType.APPLICATION_JSON_VALUE));
         //then
-        perform.andExpect(status().isOk());
-
+        MvcResult mvcResult2 = perform.andExpect(status().isOk()).andReturn();
+        String jsonWithOffers = mvcResult2.getResponse().getContentAsString();
+        List<OfferResponseDto> offers = objectMapper.readValue(jsonWithOffers, new TypeReference<>() {
+        });
+        assertThat(offers).isEmpty();
 
         // step 8: there are 2 new offers in external HTTP server
         // step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
