@@ -55,9 +55,8 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
 
         // step 7: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 0 offers
         // given
-
-        // when
         String offerUrl = "/offers";
+        // when
         ResultActions perform = mockMvc.perform(get(offerUrl)
                 .contentType(MediaType.APPLICATION_JSON_VALUE));
         // then
@@ -68,8 +67,37 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         assertThat(offers).isEmpty();
 
         // step 8: there are 2 new offers in external HTTP server
+        // given && when && then
+        wireMockServer.stubFor(WireMock.get("/offers")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(bodyWithTwoOffersJson())));
+
+
         // step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
+        // given && when
+        List<OfferResponseDto> responseTwoNewOffers = offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
+        // then
+        assertThat(responseTwoNewOffers).hasSize(2);
+
+
         // step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers with ids: 1000 and 2000
+        // given && when
+        ResultActions performGetTwoOffers = mockMvc.perform(get(offerUrl)
+                .contentType(MediaType.APPLICATION_JSON_VALUE));
+        // then
+        MvcResult performGetTwoOffersMvcResult = performGetTwoOffers.andExpect(status().isOk()).andReturn();
+        String jsonWithTwoOffers = performGetTwoOffersMvcResult.getResponse().getContentAsString();
+        List<OfferResponseDto> twoOffers = objectMapper.readValue(jsonWithTwoOffers, new TypeReference<>() {
+        });
+        assertThat(twoOffers).hasSize(2);
+        OfferResponseDto expectedOfferNoOne = twoOffers.get(0);
+        OfferResponseDto expectedOfferNoTwo = twoOffers.get(1);
+        assertThat(twoOffers).containsExactlyInAnyOrder(
+                new OfferResponseDto(expectedOfferNoOne.id(), expectedOfferNoOne.companyName(), expectedOfferNoOne.position(), expectedOfferNoOne.salary(), expectedOfferNoOne.offerUrl()),
+                new OfferResponseDto(expectedOfferNoTwo.id(), expectedOfferNoTwo.companyName(), expectedOfferNoTwo.position(), expectedOfferNoTwo.salary(), expectedOfferNoTwo.offerUrl())
+        );
 
 
         // step 11: user made GET /offers/9999 and system returned NOT_FOUND(404) with message “Offer with id 9999 not found”
@@ -133,7 +161,7 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
                 .getContentAsString();
         List<OfferResponseDto> parsedJsonWithOneOffer = objectMapper.readValue(oneOfferJson, new TypeReference<>() {
         });
-        assertThat(parsedJsonWithOneOffer).hasSize(1);
+        assertThat(parsedJsonWithOneOffer).hasSize(3);
         assertThat(parsedJsonWithOneOffer.stream().map(OfferResponseDto::id)).contains(id);
     }
 }
