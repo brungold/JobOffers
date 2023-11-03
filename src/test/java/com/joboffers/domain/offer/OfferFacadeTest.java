@@ -3,10 +3,10 @@ package com.joboffers.domain.offer;
 import com.joboffers.domain.offer.dto.JobOfferResponse;
 import com.joboffers.domain.offer.dto.OfferRequestDto;
 import com.joboffers.domain.offer.dto.OfferResponseDto;
-import com.joboffers.domain.offer.error.OfferDuplicateException;
 import com.joboffers.domain.offer.error.OfferNotFoundException;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DuplicateKeyException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -95,7 +95,7 @@ class OfferFacadeTest {
 
         //then
         AssertionsForClassTypes.assertThat(thrown)
-                .isInstanceOf(OfferDuplicateException.class)
+                .isInstanceOf(DuplicateKeyException.class)
                 .hasMessage("Offer with url www.oferta100.com/100 already exists");
     }
 
@@ -123,11 +123,11 @@ class OfferFacadeTest {
 
         //then
         AssertionsForClassTypes.assertThat(thrown1)
-                .isInstanceOf(OfferDuplicateException.class)
+                .isInstanceOf(DuplicateKeyException.class)
                 .hasMessage("Offer with url www.oferta3.com/3 already exists");
 
         AssertionsForClassTypes.assertThat(thrown2)
-                .isInstanceOf(OfferDuplicateException.class)
+                .isInstanceOf(DuplicateKeyException.class)
                 .hasMessage("Offer with url www.oferta4.com/4 already exists");
     }
 
