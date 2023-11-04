@@ -1,4 +1,4 @@
-package com.joboffers.controller;
+package com.joboffers.controller.error;
 
 import com.joboffers.BaseIntegrationTest;
 import org.junit.jupiter.api.Test;
