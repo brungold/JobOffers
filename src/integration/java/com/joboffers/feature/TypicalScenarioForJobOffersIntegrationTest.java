@@ -60,9 +60,27 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
 
 
         // step 3: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned UNAUTHORIZED(401)
-        // given
-        // when
+        // given & when
+        ResultActions failedLoginRequest = mockMvc.perform(post("/token")
+                .content("""
+                        {
+                        "username": "someUser",
+                        "password": "somePassword"
+                        }
+                        """.trim())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
         // then
+        failedLoginRequest
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().json("""
+                        {
+                          "message": "Bad Credentials",
+                          "status": "UNAUTHORIZED"
+                        }
+                        """.trim()));
+
+
         // step 4: user made GET /offers with no jwt token and system returned UNAUTHORIZED(401)
         // step 5: user made POST /register with username=someUser, password=somePassword and system registered user with status OK(200)
         // step 6: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned OK(200) and jwttoken=AAAA.BBBB.CCC
@@ -177,8 +195,6 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
                 new OfferResponseDto(expectedOfferNoThree.id(), expectedOfferNoThree.companyName(), expectedOfferNoThree.position(), expectedOfferNoThree.salary(), expectedOfferNoThree.offerUrl()),
                 new OfferResponseDto(expectedOfferNoFour.id(), expectedOfferNoFour.companyName(), expectedOfferNoFour.position(), expectedOfferNoFour.salary(), expectedOfferNoFour.offerUrl())
         );
-
-
 
 
         //step 16: user made POST /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and offer as body and system returned CREATED(201) with saved offer
