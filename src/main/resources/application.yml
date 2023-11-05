@@ -13,7 +13,7 @@ offer:
       config:
         connectionTimeout: 1000
         port: 5057
-        readTimeout: 1000
+        readTimeout: 5000
         uri: http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com
 
 http:
