@@ -2,10 +2,13 @@ package com.joboffers.domain.loginandregisterfacade;
 
 import com.joboffers.domain.loginandregisterfacade.dto.RegisterUserDto;
 import com.joboffers.domain.loginandregisterfacade.dto.RegistrationResultDto;
+import org.springframework.security.authentication.BadCredentialsException;
 import com.joboffers.domain.loginandregisterfacade.dto.UserDto;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
+@Component
 public class LoginAndRegisterFacade {
 
     private static final String USER_NOT_FOUND = "User not found.";
@@ -13,9 +16,9 @@ public class LoginAndRegisterFacade {
     private final LoginRepository repository;
 
     public UserDto findByUserName(String username) {
-        return repository.findByUserName(username)
+        return repository.findByUsername(username)
                 .map(user -> new UserDto(user.id(), user.username(), user.password()))
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+                .orElseThrow(() -> new BadCredentialsException(USER_NOT_FOUND));
     }
 
     public RegistrationResultDto register(RegisterUserDto registerUserDto) {

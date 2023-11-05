@@ -5,6 +5,7 @@ import com.joboffers.domain.loginandregisterfacade.dto.RegistrationResultDto;
 import com.joboffers.domain.loginandregisterfacade.dto.UserDto;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -38,7 +39,7 @@ class LoginAndRegisterFacadeTest {
 
         //then
         AssertionsForClassTypes.assertThat(thrown)
-                .isInstanceOf(UserNotFoundException.class)
+                .isInstanceOf(BadCredentialsException.class)
                 .hasMessage("User not found.");
     }
 
