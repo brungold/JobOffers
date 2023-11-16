@@ -12,6 +12,4 @@ public class OfferHttpRestTemplateIntegrationTestConfig extends OfferHttpClientC
         final RestTemplate restTemplate = restTemplate(connectionTimeout, readTimeout, restTemplateResponseErrorHandler());
         return remoteOfferClient(restTemplate, WIRE_MOCK_HOST, port);
     }
-
-
 }
