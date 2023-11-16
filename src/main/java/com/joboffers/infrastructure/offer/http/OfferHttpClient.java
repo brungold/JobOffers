@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Collections;
 import java.util.List;
 
 @AllArgsConstructor
@@ -23,16 +22,15 @@ public class OfferHttpClient implements OfferFetchable {
     private final String uri;
     private final int port;
 
-    //    http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers
-    //    GET https://nofluffjobs.com/api/posting?salaryPeriod=month&region=pl // https://nofluffjobs.com/api/posting
+    //    GET https://nofluffjobs.com/api/posting?salaryPeriod=month&region=pl
+    //    https://nofluffjobs.com/api/posting
     @Override
     public List<JobOfferResponse> fetchAllOffers() {
         log.info("Started fetching offers using http client");
         HttpHeaders headers = new HttpHeaders();
         final HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
         try {
-            String urlForService = getUrlForService("?salaryPeriod=month&region=pl");
-            final String url = UriComponentsBuilder.fromHttpUrl(urlForService).toUriString();
+            final String url = getUrlForService();
             ResponseEntity<DraftListForFilteringJobOfferResponseDto> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
@@ -53,8 +51,13 @@ public class OfferHttpClient implements OfferFetchable {
         }
     }
 
-    private String getUrlForService(String service) {
-        return uri  + service;
-        //+ ":" + port
+    private String getUrlForService() {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri);
+        builder.queryParam("salaryCurrency", "PLN");
+        builder.queryParam("salaryPeriod", "month");
+        builder.queryParam("region", "pl");
+
+        final String url = builder.toUriString();
+        return url;
     }
 }
