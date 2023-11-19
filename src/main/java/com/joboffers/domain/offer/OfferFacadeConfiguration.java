@@ -1,5 +1,6 @@
 package com.joboffers.domain.offer;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,8 +9,10 @@ import org.springframework.context.annotation.Configuration;
 public class OfferFacadeConfiguration {
 
     @Bean
-    OfferFacade offerFacade(OfferFetchable offerFetchable, OfferRepository repository) {
-        OfferService offerService = new OfferService(offerFetchable, repository);
+    OfferFacade offerFacade(@Qualifier("remoteOfferNoFluffJobsClient") OfferFetchable noFluffJobsOfferClient,
+                            @Qualifier("remoteOfferClientPracujPl") OfferFetchable pracujPlOfferClient,
+                            OfferRepository repository) {
+        OfferService offerService = new OfferService(noFluffJobsOfferClient, pracujPlOfferClient, repository);
         return new OfferFacade(repository, offerService);
     }
 }

@@ -1,8 +1,8 @@
-package com.joboffers.infrastructure.offer.http;
+package com.joboffers.infrastructure.offer.http.nofluffjobsproxy;
 
 import com.joboffers.domain.offer.OfferFetchable;
 import com.joboffers.domain.offer.dto.JobOfferResponse;
-import com.joboffers.infrastructure.offer.http.dto.DraftListForFilteringJobOfferResponseDto;
+import com.joboffers.infrastructure.offer.http.nofluffjobsproxy.dto.DraftListForFilteringJobOfferResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.ParameterizedTypeReference;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Log4j2
-public class OfferHttpClient implements OfferFetchable {
+public class OfferHttpNoFluffJobsClient implements OfferFetchable {
 
     private final RestTemplate restTemplate;
     private final String uri;
@@ -26,7 +26,7 @@ public class OfferHttpClient implements OfferFetchable {
     //    https://nofluffjobs.com/api/posting
     @Override
     public List<JobOfferResponse> fetchAllOffers() {
-        log.info("Started fetching offers using http client");
+        log.info("Started fetching offers from No Fluff Jobs using http client");
         HttpHeaders headers = new HttpHeaders();
         final HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
         try {

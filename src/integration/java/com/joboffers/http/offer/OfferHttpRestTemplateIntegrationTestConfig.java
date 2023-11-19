@@ -10,6 +10,6 @@ public class OfferHttpRestTemplateIntegrationTestConfig extends OfferHttpClientC
 
     public OfferFetchable remonteOfferFetchable(int port, int connectionTimeout, int readTimeout) {
         final RestTemplate restTemplate = restTemplate(connectionTimeout, readTimeout, restTemplateResponseErrorHandler());
-        return remoteOfferClient(restTemplate, WIRE_MOCK_HOST, port);
+        return remoteOfferNoFluffJobsClient(restTemplate, WIRE_MOCK_HOST, port);
     }
 }

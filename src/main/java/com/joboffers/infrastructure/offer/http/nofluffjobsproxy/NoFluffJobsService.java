@@ -1,8 +1,8 @@
-package com.joboffers.infrastructure.offer.http;
+package com.joboffers.infrastructure.offer.http.nofluffjobsproxy;
 
 import com.joboffers.domain.offer.dto.JobOfferResponse;
-import com.joboffers.infrastructure.offer.http.dto.DraftForFilteringJobOfferResponseDto;
-import com.joboffers.infrastructure.offer.http.dto.DraftListForFilteringJobOfferResponseDto;
+import com.joboffers.infrastructure.offer.http.nofluffjobsproxy.dto.DraftForFilteringJobOfferResponseDto;
+import com.joboffers.infrastructure.offer.http.nofluffjobsproxy.dto.DraftListForFilteringJobOfferResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;

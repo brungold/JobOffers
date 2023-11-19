@@ -17,11 +17,16 @@ spring:
 offer:
   http:
     client:
-      config:
+      nofluffjobs:
         connectionTimeout: 1000
         port: 443
         readTimeout: 5000
         uri: https://nofluffjobs.com/api/posting
+      pracujpl:
+        connectionTimeout: 1000
+        port: 443
+        readTimeout: 5000
+        uri: https://it.pracuj.pl/praca/
 
 http:
   offers:
