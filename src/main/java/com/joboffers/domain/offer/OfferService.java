@@ -17,18 +17,16 @@ public class OfferService {
     private final OfferRepository offerRepository;
 
     List<Offer> fetchAllOffersAndSaveAllIfNotExists() {
-        //final List<Offer> allOffers = fetchAllJobOfferResponses();
-        List<Offer> pracujPlOffers = fetchAllOffersFromPracujPl();
-        final List<Offer> jobOffers = findNotExistingOffers(pracujPlOffers);
+        final List<Offer> allOffers = fetchAllJobOfferResponses();
+        final List<Offer> jobOffers = findNotExistingOffers(allOffers);
         return offerRepository.saveAll(jobOffers);
     }
 
     private List<Offer> fetchAllJobOfferResponses() {
         List<Offer> pracujPlOffers = fetchAllOffersFromPracujPl();
-        //List<Offer> noFluffJobsOffers = fetchAllOffers();
-        //return Stream.concat(noFluffJobsOffers.stream(), pracujPlOffers.stream())
-        //        .collect(Collectors.toList());
-        return pracujPlOffers;
+        List<Offer> noFluffJobsOffers = fetchAllOffers();
+        return Stream.concat(noFluffJobsOffers.stream(), pracujPlOffers.stream())
+                .collect(Collectors.toList());
     }
 
     private List<Offer> fetchAllOffersFromPracujPl() {
