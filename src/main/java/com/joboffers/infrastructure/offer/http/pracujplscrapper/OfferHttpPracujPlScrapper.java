@@ -51,11 +51,9 @@ public class OfferHttpPracujPlScrapper implements OfferFetchable {
                     Element companyElement = offerElement.selectFirst("h4[data-test='text-company-name']");
                     String companyName = (companyElement != null) ? companyElement.text() : "Unknown Company";
 
-                    // Zmiany w porównaniu do poprzedniego kodu
                     Element linkElement = titleElement != null ? titleElement : offerElement.selectFirst("a[data-test='link-offer']");
                     String offerUrl = (linkElement != null) ? linkElement.attr("href") : "";
 
-                    // Sprawdzenie czy istnieje element salary
                     Element salaryElement = offerElement.selectFirst("span[data-test='offer-salary']");
                     String salary = (salaryElement != null) ? salaryElement.text() : "Not Available";
 
