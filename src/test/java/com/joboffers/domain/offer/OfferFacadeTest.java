@@ -147,8 +147,8 @@ class OfferFacadeTest {
     public void should_return_expected_offers() {
         //given
         List<JobOfferResponse> jobOffers = List.of(
-                new JobOfferResponse("Unknow", "Junior", "5000", "www.url1.com"),
-                new JobOfferResponse("Amazon", "Senior", "8000", "www.url2.com")
+                new JobOfferResponse("Junior", "Unknow", "5000", "www.url1.com"),
+                new JobOfferResponse("Senior", "Amazon", "8000", "www.url2.com")
         );
         InMemoryOfferFetchable offerFetchable = new InMemoryOfferFetchable(jobOffers);
 

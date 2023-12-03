@@ -12,10 +12,10 @@ public class OfferFacadeTestConfiguration {
     OfferFacadeTestConfiguration() {
         this.offerFetchable = new InMemoryOfferFetchable(
                 List.of(
-                        new JobOfferResponse("Asseco", "Junior", "5000", "www.oferta1.com/1"),
-                        new JobOfferResponse("Intel", "Junior", "6000", "www.oferta2.com/2"),
-                        new JobOfferResponse("Microsoft", "Junior", "5500", "www.oferta3.com/3"),
-                        new JobOfferResponse("Comarch", "Junior", "3000", "www.oferta4.com/4")
+                        new JobOfferResponse("Junior","Asseco" , "5000", "www.oferta1.com/1"),
+                        new JobOfferResponse("Junior", "Intel", "6000", "www.oferta2.com/2"),
+                        new JobOfferResponse("Junior", "Microsoft", "5500", "www.oferta3.com/3"),
+                        new JobOfferResponse("Junior", "Comarch", "3000", "www.oferta4.com/4")
                 )
         );
         this.offerRepository = new InMemoryOfferRepository();
