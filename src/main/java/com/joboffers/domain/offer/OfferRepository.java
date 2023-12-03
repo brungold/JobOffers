@@ -2,7 +2,6 @@ package com.joboffers.domain.offer;
 
 import java.util.List;
 import java.util.Optional;
-
 public interface OfferRepository {
     List<Offer> findAll();
 
