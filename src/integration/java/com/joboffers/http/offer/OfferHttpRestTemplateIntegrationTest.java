@@ -31,7 +31,7 @@ public class OfferHttpRestTemplateIntegrationTest implements SampleJobOfferRespo
                     1000
             );
     @Test
-    void should_throw_exception_500_when_fault_empty_response() {
+    void should_throw_exception_500_when_fault_connection_reset_by_peer() {
         // given
         wireMockServer.stubFor(WireMock.get("/offers")
                 .willReturn(WireMock.aResponse()
@@ -43,6 +43,137 @@ public class OfferHttpRestTemplateIntegrationTest implements SampleJobOfferRespo
         Throwable throwable = catchThrowable(() -> testOfferClient.fetchAllOffers());
 
         // then
+        assertThat(throwable).isInstanceOf(ResponseStatusException.class);
+        assertThat(throwable.getMessage()).isEqualTo("500 INTERNAL_SERVER_ERROR");
+    }
+
+
+    @Test
+    void should_throw_exception_500_when_fault_empty_response() {
+        // given
+        wireMockServer.stubFor(WireMock.get("/offers")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
+                        .withFault(Fault.EMPTY_RESPONSE))
+        );
+
+        // when
+        Throwable throwable = catchThrowable( () -> testOfferClient.fetchAllOffers());
+
+        // then
+        assertThat(throwable).isInstanceOf(ResponseStatusException.class);
+        assertThat(throwable.getMessage()).isEqualTo("500 INTERNAL_SERVER_ERROR");
+    }
+
+    @Test
+    void should_throw_exception_500_when_fault_malformed_response_chunk() {
+        // given
+        wireMockServer.stubFor(WireMock.get("/offers")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
+                        .withFault(Fault.MALFORMED_RESPONSE_CHUNK))
+        );
+
+        // when
+        Throwable throwable = catchThrowable(() -> testOfferClient.fetchAllOffers());
+
+        // then
+        assertThat(throwable).isInstanceOf(ResponseStatusException.class);
+        assertThat(throwable.getMessage()).isEqualTo("500 INTERNAL_SERVER_ERROR");
+    }
+
+    @Test
+    void should_throw_exception_500_when_fault_random_data_then_close() {
+        // given
+        wireMockServer.stubFor(WireMock.get("/offers")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
+                        .withFault(Fault.RANDOM_DATA_THEN_CLOSE))
+        );
+
+        // then
+        Throwable throwable = catchThrowable(() -> testOfferClient.fetchAllOffers());
+
+        //
+        assertThat(throwable).isInstanceOf(ResponseStatusException.class);
+        assertThat(throwable.getMessage()).isEqualTo("500 INTERNAL_SERVER_ERROR");
+    }
+
+
+    @Test
+    void should_throw_exception_401_when_http_service_returning_unauthorized_status() {
+        // given
+        wireMockServer.stubFor(WireMock.get("/offers")
+                .willReturn(WireMock.aResponse()
+                        .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
+                        .withStatus(HttpStatus.SC_UNAUTHORIZED))
+        );
+
+        // when
+        Throwable throwable = catchThrowable(() -> testOfferClient.fetchAllOffers());
+
+        // then
+        assertThat(throwable).isInstanceOf(ResponseStatusException.class);
+        assertThat(throwable.getMessage()).isEqualTo("401 UNAUTHORIZED");
+    }
+
+    @Test
+    public void should_throw_exception_204_when_status_is_204_N_no_content() {
+        //given
+        wireMockServer.stubFor(WireMock.get("/offers")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.SC_NO_CONTENT)
+                        .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
+                        .withBody("""
+                                                          
+                                """.trim()
+                        )));
+
+        //when
+        Throwable throwable = catchThrowable(() -> testOfferClient.fetchAllOffers());
+
+        // then
+        assertThat(throwable).isInstanceOf(ResponseStatusException.class);
+        assertThat(throwable.getMessage()).isEqualTo("204 NO_CONTENT");
+    }
+
+    @Test
+    void should_throw_exception_404_when_http_service_returning_not_found_status() {
+        //given
+        wireMockServer.stubFor(WireMock.get("/offers")
+                .willReturn(WireMock.aResponse()
+                        .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
+                        .withStatus(HttpStatus.SC_NOT_FOUND))
+        );
+
+        //when
+        Throwable throwable = catchThrowable(() -> testOfferClient.fetchAllOffers());
+
+        //then
+        assertThat(throwable).isInstanceOf(ResponseStatusException.class);
+        assertThat(throwable.getMessage()).isEqualTo("404 NOT_FOUND");
+    }
+
+    @Test
+    void should_throw_exception_500_when_response_delay_is_5000_ms_and_client_has_1000_ms_read_timeout() {
+        //given
+        wireMockServer.stubFor(WireMock.get("/offers")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
+                        .withBody("""
+                                                             
+                                """.trim()
+                        )
+                        .withFixedDelay(5000)));
+
+        //when
+        Throwable throwable = catchThrowable(() -> testOfferClient.fetchAllOffers());
+
+        //then
         assertThat(throwable).isInstanceOf(ResponseStatusException.class);
         assertThat(throwable.getMessage()).isEqualTo("500 INTERNAL_SERVER_ERROR");
     }

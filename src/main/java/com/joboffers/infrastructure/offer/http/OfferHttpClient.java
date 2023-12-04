@@ -65,7 +65,7 @@ public class OfferHttpClient implements OfferFetchable {
     private static List<JobOfferResponse> handleResponse(ResponseEntity<List<JobOfferResponse>> response) {
         final List<JobOfferResponse> body = response.getBody();
         if (body == null) {
-            log.info("Response Body was null");
+            log.error("Response Body was null");
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
         log.info("Success Response Body Returned: " + body);
