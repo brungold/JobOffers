@@ -8,6 +8,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Collections;
@@ -57,15 +58,15 @@ public class OfferHttpClient implements OfferFetchable {
             return response;
         } catch (ResourceAccessException e) {
             log.error("Error while fetching offers using http client: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     private static List<JobOfferResponse> handleResponse(ResponseEntity<List<JobOfferResponse>> response) {
         final List<JobOfferResponse> body = response.getBody();
         if (body == null) {
-            log.info("Response Body was null returning empty list");
-            return Collections.emptyList();
+            log.info("Response Body was null");
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
         log.info("Success Response Body Returned: " + body);
         return body;
