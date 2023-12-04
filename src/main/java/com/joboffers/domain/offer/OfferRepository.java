@@ -1,15 +1,10 @@
 package com.joboffers.domain.offer;
 
-import java.util.List;
-import java.util.Optional;
-public interface OfferRepository {
-    List<Offer> findAll();
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-    Optional<Offer> findById(String id);
+@Repository
+public interface OfferRepository extends MongoRepository<Offer, String> {
 
-    Offer save(Offer offer);
-
-    List<Offer> saveAll(List<Offer> offers);
-
-    boolean existsByUrl(String url);
+    boolean existsByOfferUrl(String offerUrl);
 }
