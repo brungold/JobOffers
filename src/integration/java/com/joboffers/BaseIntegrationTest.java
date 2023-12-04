@@ -23,7 +23,8 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 @Testcontainers
 public class BaseIntegrationTest {
 
-    public static final String WIRE_MOCK_HOST = "http://localhost";
+    public static final String WIRE_MOCK_HOST_PRACUJ = "http://localhost";
+    public static final String WIRE_MOCK_HOST_NOFLUFFJOBS = "http://localhost";
 
     @Autowired
     public MockMvc mockMvc;
@@ -35,14 +36,26 @@ public class BaseIntegrationTest {
     public ObjectMapper objectMapper;
 
     @RegisterExtension
-    public static WireMockExtension wireMockServer = WireMockExtension.newInstance()
+    public static WireMockExtension wireMockServerForPracuj = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
+
+    @RegisterExtension
+    public static WireMockExtension wireMockServerForNoFluffJobs = WireMockExtension.newInstance()
             .options(wireMockConfig().dynamicPort())
             .build();
 
     @DynamicPropertySource
-    public static void propertyOverride(DynamicPropertyRegistry registry) {
+    public static void propertyOverrideNoFluffJobs (DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-        registry.add("offer.http.client.config.uri", () -> WIRE_MOCK_HOST);
-        registry.add("offer.http.client.config.port", () -> wireMockServer.getPort());
+        registry.add("offer.http.client.nofluffjobs.uri", () -> WIRE_MOCK_HOST_NOFLUFFJOBS);
+        registry.add("offer.http.client.nofluffjobs.port", () -> wireMockServerForNoFluffJobs.getPort());
+    }
+
+    @DynamicPropertySource
+    public static void propertyOverridePracujPl (DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+        registry.add("offer.http.client.pracujpl.uri", () -> WIRE_MOCK_HOST_PRACUJ);
+        registry.add("offer.http.client.pracujpl.port", () -> wireMockServerForPracuj.getPort());
     }
 }

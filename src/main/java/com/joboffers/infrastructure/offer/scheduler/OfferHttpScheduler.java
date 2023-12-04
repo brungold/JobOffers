@@ -22,9 +22,18 @@ public class OfferHttpScheduler {
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     @Scheduled(fixedDelayString = "${http.offers.scheduler.request.delay}")
-    public List<OfferResponseDto> fetchAllOffersAndSaveAllIfNotExists() {
+    public List<OfferResponseDto> fetchAllOffersPracujPlAndSaveAllIfNotExists() {
         log.info(STARTED_OFFERS_FETCHING_MESSAGE, LocalDateTime.now().format(dateFormat));
-        List<OfferResponseDto> offerResponseDtosList = offerFacade.fetchAllOffersAndSaveAllIfNotExists();
+        List<OfferResponseDto> offerResponseDtosList = offerFacade.fetchAllOffersPracujPlAndSaveAllIfNotExists();
+        log.info(ADDED_NEW_OFFERS_MESSAGE, offerResponseDtosList.size());
+        log.info(FINISHED_OFFERS_FETCHING_MESSAGE, LocalDateTime.now().format(dateFormat));
+        return offerResponseDtosList;
+    }
+
+    @Scheduled(fixedDelayString = "${http.offers.scheduler.request.delay}")
+    public List<OfferResponseDto> fetchAllOffersFromNoFluffJobsAndSaveAllIfNotExists() {
+        log.info(STARTED_OFFERS_FETCHING_MESSAGE, LocalDateTime.now().format(dateFormat));
+        List<OfferResponseDto> offerResponseDtosList = offerFacade.fetchAllOffersFromNoFluffJobsAndSaveAllIfNotExists();
         log.info(ADDED_NEW_OFFERS_MESSAGE, offerResponseDtosList.size());
         log.info(FINISHED_OFFERS_FETCHING_MESSAGE, LocalDateTime.now().format(dateFormat));
         return offerResponseDtosList;

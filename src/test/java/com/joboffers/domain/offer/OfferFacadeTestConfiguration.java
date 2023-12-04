@@ -27,7 +27,7 @@ public class OfferFacadeTestConfiguration {
     }
 
     OfferFacade offerFacadeForTests() {
-        return new OfferFacade(offerRepository, new OfferService(offerFetchable, offerRepository));
+        return new OfferFacade(offerRepository, new OfferService(offerFetchable, offerFetchable, offerRepository));
     }
 }
 

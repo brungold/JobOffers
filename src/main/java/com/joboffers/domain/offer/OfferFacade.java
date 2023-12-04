@@ -32,11 +32,24 @@ public class OfferFacade {
         return OfferMapper.mapFromOferToOfferResponseDto(offerSaved);
     }
 
-    public List<OfferResponseDto> fetchAllOffersAndSaveAllIfNotExists() {
-        return offerService.fetchAllOffersAndSaveAllIfNotExists()
+//    public List<OfferResponseDto> fetchAllOffersAndSaveAllIfNotExists() {
+//        return offerService.fetchAllOffersAndSaveAllIfNotExists()
+//                .stream()
+//                .map(OfferMapper::mapFromOfferToOfferResponseDto)
+//                .toList();
+//    }
+
+    public List<OfferResponseDto> fetchAllOffersFromNoFluffJobsAndSaveAllIfNotExists() {
+        return offerService.fetchAllOffersFromNoFluffJobsAndSaveAllIfNotExists()
                 .stream()
                 .map(OfferMapper::mapFromOferToOfferResponseDto)
                 .toList();
+    }
 
+    public List<OfferResponseDto> fetchAllOffersPracujPlAndSaveAllIfNotExists() {
+        return offerService.fetchAllOffersFromPracujPlAndSaveAllIfNotExists()
+                .stream()
+                .map(OfferMapper::mapFromOferToOfferResponseDto)
+                .toList();
     }
 }

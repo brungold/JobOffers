@@ -21,7 +21,7 @@ class OfferFacadeTest {
         assertThat(offerFacade.findAllOffers()).isEmpty();
 
         //when
-        List<OfferResponseDto> result = offerFacade.fetchAllOffersAndSaveAllIfNotExists();
+        List<OfferResponseDto> result = offerFacade.fetchAllOffersFromNoFluffJobsAndSaveAllIfNotExists();
 
         //then
         assertThat(result).hasSize(4);
@@ -58,7 +58,7 @@ class OfferFacadeTest {
         assertThat(offerFacade.findAllOffers()).hasSize(4);
 
         //when
-        List<OfferResponseDto> result = offerFacade.fetchAllOffersAndSaveAllIfNotExists();
+        List<OfferResponseDto> result = offerFacade.fetchAllOffersFromNoFluffJobsAndSaveAllIfNotExists();
 
         //then
         assertThat(result).hasSize(1);

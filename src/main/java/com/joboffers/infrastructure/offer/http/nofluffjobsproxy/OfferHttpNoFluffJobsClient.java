@@ -23,6 +23,7 @@ public class OfferHttpNoFluffJobsClient implements OfferFetchable {
     private final int port;
 
     //    GET https://nofluffjobs.com/api/posting?salaryPeriod=month&region=pl
+    //    GET https://nofluffjobs.com/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
     //    https://nofluffjobs.com/api/posting
     @Override
     public List<JobOfferResponse> fetchAllOffers() {
@@ -37,14 +38,14 @@ public class OfferHttpNoFluffJobsClient implements OfferFetchable {
                     requestEntity,
                     new ParameterizedTypeReference<>() {
                     });
+
             final DraftListForFilteringJobOfferResponseDto body = response.getBody();
             if (body == null) {
-                log.error("Response Body was null");
+                log.error("Response Body was null or status was NO_CONTENT");
                 throw new ResponseStatusException(HttpStatus.NO_CONTENT);
             }
             log.info("Success Response Body Returned: " + body);
             return NoFluffJobsService.getFilteredOffers(body);
-            // tu wprowadź kod
         } catch (ResourceAccessException e) {
             log.error("Error while fetching offers using http client: " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -20,20 +20,20 @@ public class OfferHttpRestTemplateIntegrationTest implements SampleJobOfferRespo
     public static final String APPLICATION_JSON_CONTENT_TYPE_VALUE = "application/json";
 
     @RegisterExtension
-    public static WireMockExtension wireMockServer = WireMockExtension.newInstance()
+    public static WireMockExtension wireMockServerForNoFluffJobs = WireMockExtension.newInstance()
             .options(wireMockConfig().dynamicPort())
             .build();
 
     OfferFetchable testOfferClient = new OfferHttpRestTemplateIntegrationTestConfig()
             .remonteOfferFetchable(
-                    wireMockServer.getPort(),
+                    wireMockServerForNoFluffJobs.getPort(),
                     1000,
                     1000
             );
     @Test
     void should_throw_exception_500_when_fault_connection_reset_by_peer() {
         // given
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServerForNoFluffJobs.stubFor(WireMock.get("?salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.SC_OK)
                         .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
@@ -51,7 +51,7 @@ public class OfferHttpRestTemplateIntegrationTest implements SampleJobOfferRespo
     @Test
     void should_throw_exception_500_when_fault_empty_response() {
         // given
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServerForNoFluffJobs.stubFor(WireMock.get("?salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.SC_OK)
                         .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
@@ -69,7 +69,7 @@ public class OfferHttpRestTemplateIntegrationTest implements SampleJobOfferRespo
     @Test
     void should_throw_exception_500_when_fault_malformed_response_chunk() {
         // given
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServerForNoFluffJobs.stubFor(WireMock.get("?salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.SC_OK)
                         .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
@@ -87,7 +87,7 @@ public class OfferHttpRestTemplateIntegrationTest implements SampleJobOfferRespo
     @Test
     void should_throw_exception_500_when_fault_random_data_then_close() {
         // given
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServerForNoFluffJobs.stubFor(WireMock.get("?salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.SC_OK)
                         .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
@@ -106,7 +106,7 @@ public class OfferHttpRestTemplateIntegrationTest implements SampleJobOfferRespo
     @Test
     void should_throw_exception_401_when_http_service_returning_unauthorized_status() {
         // given
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServerForNoFluffJobs.stubFor(WireMock.get("?salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
                         .withStatus(HttpStatus.SC_UNAUTHORIZED))
@@ -123,7 +123,7 @@ public class OfferHttpRestTemplateIntegrationTest implements SampleJobOfferRespo
     @Test
     public void should_throw_exception_204_when_status_is_204_N_no_content() {
         //given
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServerForNoFluffJobs.stubFor(WireMock.get("?salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.SC_NO_CONTENT)
                         .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
@@ -143,7 +143,7 @@ public class OfferHttpRestTemplateIntegrationTest implements SampleJobOfferRespo
     @Test
     void should_throw_exception_404_when_http_service_returning_not_found_status() {
         //given
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServerForNoFluffJobs.stubFor(WireMock.get("?salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)
                         .withStatus(HttpStatus.SC_NOT_FOUND))
@@ -160,7 +160,7 @@ public class OfferHttpRestTemplateIntegrationTest implements SampleJobOfferRespo
     @Test
     void should_throw_exception_500_when_response_delay_is_5000_ms_and_client_has_1000_ms_read_timeout() {
         //given
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServerForNoFluffJobs.stubFor(WireMock.get("?salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.SC_OK)
                         .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)

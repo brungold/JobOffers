@@ -38,29 +38,46 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
     public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
 
     @DynamicPropertySource
-    public static void propertyOverride(DynamicPropertyRegistry registry) {
+    public static void propertyOverrideNoFluffJobs (DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-        registry.add("offer.http.client.config.uri", () -> WIRE_MOCK_HOST);
-        registry.add("offer.http.client.config.port", () -> wireMockServer.getPort());
+        registry.add("offer.http.client.nofluffjobs.uri", () -> WIRE_MOCK_HOST_NOFLUFFJOBS);
+        registry.add("offer.http.client.nofluffjobs.port", () -> wireMockServerForNoFluffJobs.getPort());
+    }
+
+    @DynamicPropertySource
+    public static void propertyOverridePracujPl (DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+        registry.add("offer.http.client.pracujpl.uri", () -> WIRE_MOCK_HOST_PRACUJ);
+        registry.add("offer.http.client.pracujpl.port", () -> wireMockServerForPracuj.getPort());
     }
 
     @Test
     public void should_go_through_the_job_offers_application() throws Exception {
         // step 1: there are no offers in external HTTP server
-        // (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
+        // https://it.pracuj.pl/praca/junior%20java;kw/warszawa;wp?rd=30
+        // https://nofluffjobs.com/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
         // given && when && then
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServerForPracuj.stubFor(WireMock.get("/junior%20java;kw/warszawa;wp?rd=30")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withBody(bodyWithZeroOffersJson())));
+
+
+        wireMockServerForNoFluffJobs.stubFor(WireMock.get("?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
                         .withBody(bodyWithZeroOffersJson())));
 
 
+
         // step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
         // given & when
-        List<OfferResponseDto> newOffers = offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
+        List<OfferResponseDto> newOffersFormPracujPl = offerHttpScheduler.fetchAllOffersPracujPlAndSaveAllIfNotExists();
+        List<OfferResponseDto> newOffersFromNoFluffJobs = offerHttpScheduler.fetchAllOffersFromNoFluffJobsAndSaveAllIfNotExists();
         // then
-        assertThat(newOffers).hasSize(0);
+        assertThat(newOffersFormPracujPl).hasSize(0);
+        assertThat(newOffersFromNoFluffJobs).hasSize(0);
 
 
         // step 3: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned UNAUTHORIZED(401)
@@ -154,7 +171,8 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
 
         // step 8: there are 2 new offers in external HTTP server
         // given && when && then
-        wireMockServer.stubFor(WireMock.get("/offers")
+
+        wireMockServerForNoFluffJobs.stubFor(WireMock.get("?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
@@ -163,7 +181,7 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
 
         // step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
         // given && when
-        List<OfferResponseDto> responseTwoNewOffers = offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
+        List<OfferResponseDto> responseTwoNewOffers = offerHttpScheduler.fetchAllOffersFromNoFluffJobsAndSaveAllIfNotExists();
         // then
         assertThat(responseTwoNewOffers).hasSize(2);
 
@@ -222,7 +240,8 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
 
         // step 13: there are 2 new offers in external HTTP server
         // given && when && then
-        wireMockServer.stubFor(WireMock.get("/offers")
+
+        wireMockServerForNoFluffJobs.stubFor(WireMock.get("?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
@@ -231,7 +250,7 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
 
         // step 14: scheduler ran 3rd time and made GET to external server and system added 2 new offers with ids: 3000 and 4000 to database
         // given && when
-        List<OfferResponseDto> twoNewOffers = offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
+        List<OfferResponseDto> twoNewOffers = offerHttpScheduler.fetchAllOffersFromNoFluffJobsAndSaveAllIfNotExists();
         // then
         assertThat(twoNewOffers).hasSize(2);
 
