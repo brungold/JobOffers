@@ -22,6 +22,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOfferResponse {
+
 
     @Autowired
     OfferHttpScheduler offerHttpScheduler;
@@ -48,8 +50,10 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
     public void should_go_through_the_job_offers_application() throws Exception {
         // step 1: there are no offers in external HTTP server
         // (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
+        //  GET https://nofluffjobs.com/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
+        //    GET https://nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
         // given && when && then
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
@@ -154,7 +158,7 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
 
         // step 8: there are 2 new offers in external HTTP server
         // given && when && then
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")

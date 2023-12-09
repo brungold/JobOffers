@@ -2,7 +2,8 @@ package com.joboffers;
 
 public interface SampleJobOfferResponse {
     default String bodyWithZeroOffersJson() {
-        return "[]";
+        //return "[]";
+        return "{ \"postings\": [] }";
     }
 
     default String bodyWithOneOfferJson() {
@@ -35,6 +36,34 @@ public interface SampleJobOfferResponse {
                 }
                 ]
                 """.trim();
+//        return """
+//            {
+//                "postings": [
+//                    {
+//                        "name": "Cybersource",
+//                        "title": "Software Engineer - Mobile (m/f/d)",
+//                        "seniority": ["senior"],
+//                        "url": "software-engineer-mobile-m-f-d-cybersource-poznan-entavdpn",
+//                        "salary": {
+//                            "from": 4000,
+//                            "to": 8000,
+//                            "currency": "PLN"
+//                        }
+//                    },
+//                    {
+//                        "name": "CDQ Poland",
+//                        "title": "Junior DevOps Engineer",
+//                        "seniority": ["junior"],
+//                        "url": "junior-devops-engineer-cdq-poland-wroclaw-gnymtxqd",
+//                        "salary": {
+//                            "from": 8000,
+//                            "to": 14000,
+//                            "currency": "PLN"
+//                        }
+//                    }
+//                ]
+//            }
+//            """.trim();
     }
 
     default String bodyWithFourOffersJson() {
@@ -67,5 +96,7 @@ public interface SampleJobOfferResponse {
                 ]
                 """.trim();
     }
+
+
 
 }

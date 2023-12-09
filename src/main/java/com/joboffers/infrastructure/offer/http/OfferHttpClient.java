@@ -22,8 +22,12 @@ public class OfferHttpClient implements OfferFetchable {
     private final String uri;
     private final int port;
 
-    //    GET https://nofluffjobs.com/api/posting?salaryPeriod=month&region=pl
+
+    //    GET https://nofluffjobs.com/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
+    //    GET https://nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
     //    https://nofluffjobs.com/api/posting
+
+
     @Override
     public List<JobOfferResponse> fetchAllOffers() {
         log.info("Started fetching offers using http client");
@@ -37,7 +41,7 @@ public class OfferHttpClient implements OfferFetchable {
                     requestEntity,
                     new ParameterizedTypeReference<>() {
                     });
-            final DraftListForFilteringJobOfferResponseDto body = response.getBody();
+            DraftListForFilteringJobOfferResponseDto body = response.getBody();
             if (body == null) {
                 log.error("Response Body was null");
                 throw new ResponseStatusException(HttpStatus.NO_CONTENT);
@@ -52,12 +56,13 @@ public class OfferHttpClient implements OfferFetchable {
     }
 
     private String getUrlForService() {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri);
-        builder.queryParam("salaryCurrency", "PLN");
-        builder.queryParam("salaryPeriod", "month");
-        builder.queryParam("region", "pl");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri)
+                .port(port)
+                .path("/api/posting")
+                .queryParam("salaryCurrency", "PLN")
+                .queryParam("salaryPeriod", "month")
+                .queryParam("region", "pl");
 
-        final String url = builder.toUriString();
-        return url;
+        return builder.toUriString();
     }
 }
