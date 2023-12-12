@@ -53,18 +53,18 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         //  GET https://nofluffjobs.com/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
         //    GET https://nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
         // given && when && then
-//        wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
-//                .willReturn(WireMock.aResponse()
-//                        .withStatus(HttpStatus.OK.value())
-//                        .withHeader("Content-Type", "application/json")
-//                        .withBody(bodyWithZeroOffersJson())));
+        wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json; charset=UTF-8")
+                        .withBody(bodyWithZeroOffersJson())));
 
 
         // step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
         // given & when
-//        List<OfferResponseDto> newOffers = offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
-//        // then
-//        assertThat(newOffers).hasSize(0);
+        List<OfferResponseDto> newOffers = offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
+        // then
+        assertThat(newOffers).hasSize(0);
 
 
         // step 3: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned UNAUTHORIZED(401)
@@ -163,8 +163,7 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", "application/json")
-                        .withHeader("xxx-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json; charset=UTF-8")
                         .withBody(bodyWithTwoOffersJson())));
 
 
@@ -229,10 +228,10 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
 
         // step 13: there are 2 new offers in external HTTP server
         // given && when && then
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", "application/json")
+                        .withHeader("Content-Type", "application/json; charset=UTF-8")
                         .withBody(bodyWithFourOffersJson())));
 
 

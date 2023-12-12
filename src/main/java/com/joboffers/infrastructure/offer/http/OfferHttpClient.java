@@ -30,14 +30,15 @@ public class OfferHttpClient implements OfferFetchable {
     @Override
     public List<JobOfferResponse> fetchAllOffers() {
         log.info("Started fetching offers using http client");
-//        HttpHeaders headers = new HttpHeaders();
-//        final HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json; charset=UTF-8");
+        final HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
         try {
             final String url = getUrlForService();
             ResponseEntity<DraftListForFilteringJobOfferResponseDto> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
-                    null,
+                    requestEntity,
                     new ParameterizedTypeReference<>() {
                     });
             DraftListForFilteringJobOfferResponseDto body = response.getBody();
