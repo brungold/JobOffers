@@ -27,18 +27,17 @@ public class OfferHttpClient implements OfferFetchable {
     //    GET https://nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
     //    https://nofluffjobs.com/api/posting
 
-
     @Override
     public List<JobOfferResponse> fetchAllOffers() {
         log.info("Started fetching offers using http client");
-        HttpHeaders headers = new HttpHeaders();
-        final HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
+//        HttpHeaders headers = new HttpHeaders();
+//        final HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
         try {
             final String url = getUrlForService();
             ResponseEntity<DraftListForFilteringJobOfferResponseDto> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
-                    requestEntity,
+                    null,
                     new ParameterizedTypeReference<>() {
                     });
             DraftListForFilteringJobOfferResponseDto body = response.getBody();
@@ -48,7 +47,6 @@ public class OfferHttpClient implements OfferFetchable {
             }
             log.info("Success Response Body Returned: " + body);
             return NoFluffJobsService.getFilteredOffers(body);
-            // tu wprowadź kod
         } catch (ResourceAccessException e) {
             log.error("Error while fetching offers using http client: " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);

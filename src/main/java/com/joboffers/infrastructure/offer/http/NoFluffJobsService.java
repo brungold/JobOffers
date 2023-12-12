@@ -43,7 +43,7 @@ public class NoFluffJobsService {
     public static List<DraftForFilteringJobOfferResponseDto> filterAndDistinctByCity(List<DraftForFilteringJobOfferResponseDto> jobRecordDtos) {
         return jobRecordDtos.stream()
                 .filter(jobRecordDto ->
-                        isRemote(jobRecordDto.url()) || containsCity(jobRecordDto.name(), "Warsaw") || containsCity(jobRecordDto.url(), "warszawa"))
+                        isRemote(jobRecordDto.url()) || containsCity(jobRecordDto.url(), "Warsaw") || containsCity(jobRecordDto.url(), "warszawa"))
                 .collect(Collectors.toList());
     }
 

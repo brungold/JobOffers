@@ -21,7 +21,7 @@ offer:
         connectionTimeout: 1000
         port: 443
         readTimeout: 5000
-        uri: https://nofluffjobs.com/api/posting
+        uri: https://nofluffjobs.com
 
 http:
   offers:
