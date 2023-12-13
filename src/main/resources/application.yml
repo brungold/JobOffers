@@ -22,6 +22,11 @@ offer:
         port: 443
         readTimeout: 5000
         uri: https://nofluffjobs.com
+      pracujpl:
+        connectionTimeout: 1000
+        port: 443
+        readTimeout: 5000
+        uri: https://it.pracuj.pl
 
 http:
   offers:

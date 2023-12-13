@@ -1,8 +1,8 @@
-package com.joboffers.infrastructure.offer.http;
+package com.joboffers.infrastructure.offer.http.nofluffjobsclient;
 
 import com.joboffers.domain.offer.OfferFetchable;
 import com.joboffers.domain.offer.dto.JobOfferResponse;
-import com.joboffers.infrastructure.offer.http.dto.DraftListForFilteringJobOfferResponseDto;
+import com.joboffers.infrastructure.offer.http.nofluffjobsclient.dto.DraftListForFilteringJobOfferResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.ParameterizedTypeReference;
