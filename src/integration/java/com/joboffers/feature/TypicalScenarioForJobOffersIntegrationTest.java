@@ -61,17 +61,17 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         // GET 2 https://it.pracuj.pl:433/praca/junior%20java;kw/warszawa;wp?rd=30
 
         // given && when && then
-        wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
-                .willReturn(WireMock.aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", "application/json; charset=UTF-8")
-                        .withBody(bodyWithZeroOffersJson())));
 
         wireMockServerForPracuj.stubFor(WireMock.get("/praca/junior%20java;kw/warszawa;wp?rd=30")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
                         .withBody(new String(Files.readAllBytes(Paths.get("src/integration/resources/pracujplhtml.html"))))));
+        wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json; charset=UTF-8")
+                        .withBody(bodyWithZeroOffersJson())));
 
 
         // step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
