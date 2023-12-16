@@ -2,6 +2,7 @@ package com.joboffers.infrastructure.offer.http;
 
 import com.joboffers.domain.offer.OfferFetchable;
 import com.joboffers.domain.offer.dto.JobOfferResponse;
+import com.joboffers.infrastructure.offer.http.dto.DraftListForFilteringJobOfferResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.ParameterizedTypeReference;
@@ -11,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Collections;
 import java.util.List;
 
 @AllArgsConstructor
@@ -22,53 +22,46 @@ public class OfferHttpClient implements OfferFetchable {
     private final String uri;
     private final int port;
 
-    //    http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers
+
+    //    GET https://nofluffjobs.com/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
+    //    GET https://nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
+    //    https://nofluffjobs.com/api/posting
+
     @Override
     public List<JobOfferResponse> fetchAllOffers() {
         log.info("Started fetching offers using http client");
-
-        HttpHeaders headers = createHeader();
-        final HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
-
-        String uriForService = getUrlForService("/offers");
-        final String url = UriComponentsBuilder.fromHttpUrl(uriForService).toUriString();
-
-        ResponseEntity<List<JobOfferResponse>> response = makeGetRequest(requestEntity, url);
-        return handleResponse(response);
-    }
-
-    private static HttpHeaders createHeader() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return headers;
-    }
-
-    private String getUrlForService(String service) {
-        return uri + ":" + port + service;
-    }
-
-    private ResponseEntity<List<JobOfferResponse>> makeGetRequest(HttpEntity<HttpHeaders> requestEntity, String url) {
+        headers.set("Content-Type", "application/json; charset=UTF-8");
+        final HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
         try {
-            ResponseEntity<List<JobOfferResponse>> response = restTemplate.exchange(
+            final String url = getUrlForService();
+            ResponseEntity<DraftListForFilteringJobOfferResponseDto> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
                     requestEntity,
                     new ParameterizedTypeReference<>() {
                     });
-            return response;
+            DraftListForFilteringJobOfferResponseDto body = response.getBody();
+            if (body == null) {
+                log.error("Response Body was null");
+                throw new ResponseStatusException(HttpStatus.NO_CONTENT);
+            }
+            log.info("Success Response Body Returned: " + body);
+            return NoFluffJobsService.getFilteredOffers(body);
         } catch (ResourceAccessException e) {
             log.error("Error while fetching offers using http client: " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private static List<JobOfferResponse> handleResponse(ResponseEntity<List<JobOfferResponse>> response) {
-        final List<JobOfferResponse> body = response.getBody();
-        if (body == null) {
-            log.error("Response Body was null");
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT);
-        }
-        log.info("Success Response Body Returned: " + body);
-        return body;
+    private String getUrlForService() {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri)
+                .port(port)
+                .path("/api/posting")
+                .queryParam("salaryCurrency", "PLN")
+                .queryParam("salaryPeriod", "month")
+                .queryParam("region", "pl");
+
+        return builder.toUriString();
     }
 }

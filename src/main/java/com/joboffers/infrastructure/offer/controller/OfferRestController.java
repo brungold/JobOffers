@@ -4,7 +4,6 @@ import com.joboffers.domain.offer.OfferFacade;
 import com.joboffers.domain.offer.dto.OfferRequestDto;
 import com.joboffers.domain.offer.dto.OfferResponseDto;
 import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +30,8 @@ public class OfferRestController {
     }
 
     @PostMapping
-    public ResponseEntity<OfferResponseDto> addOffer(@RequestBody @Valid OfferRequestDto offerRequestDto) {
-        OfferResponseDto offerResponseDto = offerFacade.saveOffer(offerRequestDto);
+    public ResponseEntity<OfferResponseDto> addOffer(@RequestBody @Valid OfferRequestDto offerDto) {
+        OfferResponseDto offerResponseDto = offerFacade.saveOffer(offerDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(offerResponseDto);
     }
 }
