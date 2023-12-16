@@ -48,7 +48,7 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
     }
 
     @DynamicPropertySource
-    public static void propertyOverridePracujPl (DynamicPropertyRegistry registry) {
+    public static void propertyOverridePracujPl(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
         registry.add("offer.http.client.pracujpl.uri", () -> WIRE_MOCK_HOST);
         registry.add("offer.http.client.pracujpl.port", () -> wireMockServerForPracuj.getPort());
