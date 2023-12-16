@@ -35,7 +35,6 @@ public class OfferHttpPracujPl implements OfferFetchable {
             String url = buildUrl();
             log.info("Started connecting with Pracuj.pl. Request URL: {}", url);
 //            ResponseEntity<String> responseEntity = restTemplatePracujPl.getForEntity(url, String.class, httpEntity);
-
             ResponseEntity <String> responseEntity = restTemplatePracujPl.exchange(
                     url,
                     HttpMethod.GET,
@@ -85,7 +84,7 @@ public class OfferHttpPracujPl implements OfferFetchable {
 
     // https://it.pracuj.pl:433/praca/junior%20java;kw/warszawa;wp?rd=30
     private String buildUrl() {
-        // String path = "/praca/junior%20java;kw";
+        // String path = "/praca/junior%20java;kw"; - %20 bez encodowania daje spacje
         String path = "/praca/junior java;kw";
         String city = "warszawa;wp";
         String queryParamName = "rd";
