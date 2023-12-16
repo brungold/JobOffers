@@ -160,7 +160,7 @@ public class OfferHttpRestTemplateIntegrationTest implements SampleJobOfferRespo
     @Test
     void should_throw_exception_500_when_response_delay_is_5000_ms_and_client_has_1000_ms_read_timeout() {
         //given
-        wireMockServer.stubFor(WireMock.get("/offers")
+        wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.SC_OK)
                         .withHeader(CONTENT_TYPE_HEADER_KEY, APPLICATION_JSON_CONTENT_TYPE_VALUE)

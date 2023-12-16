@@ -20,9 +20,10 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -46,13 +47,28 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         registry.add("offer.http.client.config.port", () -> wireMockServer.getPort());
     }
 
+    @DynamicPropertySource
+    public static void propertyOverridePracujPl (DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+        registry.add("offer.http.client.pracujpl.uri", () -> WIRE_MOCK_HOST);
+        registry.add("offer.http.client.pracujpl.port", () -> wireMockServerForPracuj.getPort());
+    }
+
     @Test
     public void should_go_through_the_job_offers_application() throws Exception {
         // step 1: there are no offers in external HTTP server
-        // (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
         //  GET https://nofluffjobs.com/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
         //    GET https://nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
+
+        // GET 2 https://it.pracuj.pl:433/praca/junior%20java;kw/warszawa;wp?rd=30
+
         // given && when && then
+        wireMockServerForPracuj.stubFor(WireMock.get("/praca/junior%20java;kw/warszawa;wp?rd=30")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(Files.readAllBytes(Paths.get("src/integration/resources/pracujplhtml.html")))));
+
         wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())

@@ -39,10 +39,23 @@ public class BaseIntegrationTest {
             .options(wireMockConfig().dynamicPort())
             .build();
 
+    @RegisterExtension
+    public static WireMockExtension wireMockServerForPracuj = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
+
+
     @DynamicPropertySource
     public static void propertyOverride(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
         registry.add("offer.http.client.config.uri", () -> WIRE_MOCK_HOST);
         registry.add("offer.http.client.config.port", () -> wireMockServer.getPort());
+    }
+
+    @DynamicPropertySource
+    public static void propertyOverridePracujPl (DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+        registry.add("offer.http.client.pracujpl.uri", () -> WIRE_MOCK_HOST);
+        registry.add("offer.http.client.pracujpl.port", () -> wireMockServerForPracuj.getPort());
     }
 }

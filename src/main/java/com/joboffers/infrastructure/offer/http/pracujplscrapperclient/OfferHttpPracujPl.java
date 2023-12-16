@@ -8,10 +8,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
@@ -27,10 +27,33 @@ public class OfferHttpPracujPl implements OfferFetchable {
     private final int port;
 
     public List<JobOfferResponse> fetchAllOffers() {
-        String url = buildUrl();
-        String responseBody = fetchResponseBody(url);
-        return parseHtml(responseBody);
+        log.info("Started fetching offers from PacujPl using http client");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+        try {
+            String url = buildUrl();
+            log.info("Started connecting with Pracuj.pl. Request URL: {}", url);
+//            ResponseEntity<String> responseEntity = restTemplatePracujPl.getForEntity(url, String.class, httpEntity);
+
+            ResponseEntity <String> responseEntity = restTemplatePracujPl.exchange(
+                    url,
+                    HttpMethod.GET,
+                    httpEntity,
+                    String.class);
+            final String body = responseEntity.getBody();
+            if (body == null) {
+                log.error("Response Body was null");
+                throw new ResponseStatusException(HttpStatus.NO_CONTENT);
+            }
+            log.info("Success Response body returned: " + body);
+            return parseHtml(body);
+        } catch (ResourceAccessException exception) {
+            log.error("Error while fetching offers using http client for Pracuj.pl: " + exception.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
 
     private List<JobOfferResponse> parseHtml(String html) {
         log.info("Started fetching offers from Pracuj.p using http client and jsoup");
@@ -60,12 +83,9 @@ public class OfferHttpPracujPl implements OfferFetchable {
         return PracujPlService.filterBySeniorityTechnologyAndPlaceInUrl(jobOffers);
     }
 
-    private String fetchResponseBody(String url) {
-        ResponseEntity<String> responseEntity = restTemplatePracujPl.getForEntity(url, String.class);
-        return responseEntity.getBody();
-    }
-    // https://it.pracuj.pl/praca/junior%20java;kw/warszawa;wp?rd=30
+    // https://it.pracuj.pl:433/praca/junior%20java;kw/warszawa;wp?rd=30
     private String buildUrl() {
+        // String path = "/praca/junior%20java;kw";
         String path = "/praca/junior java;kw";
         String city = "warszawa;wp";
         String queryParamName = "rd";
