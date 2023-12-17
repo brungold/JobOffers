@@ -2,6 +2,7 @@ package com.joboffers.domain.offer;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,11 +10,20 @@ import java.util.stream.Stream;
 
 @AllArgsConstructor
 public class OfferService {
-    @Qualifier("noFluffJobsOfferClient")
-    private final OfferFetchable noFluffJobsOfferClient;
     @Qualifier("pracujPlOfferClient")
     private final OfferFetchable pracujPlOfferClient;
+    @Qualifier("noFluffJobsOfferClient")
+    private final OfferFetchable noFluffJobsOfferClient;
     private final OfferRepository offerRepository;
+
+//    public OfferService(
+//            @Qualifier("pracujPlOfferClient") OfferFetchable pracujPlOfferClient,
+//            @Qualifier("noFluffJobsOfferClient") OfferFetchable noFluffJobsOfferClient,
+//            OfferRepository offerRepository) {
+//        this.pracujPlOfferClient = pracujPlOfferClient;
+//        this.noFluffJobsOfferClient = noFluffJobsOfferClient;
+//        this.offerRepository = offerRepository;
+//    }
 
     List<Offer> fetchAllOffersAndSaveAllIfNotExists() {
         final List<Offer> allOffers = fetchAllJobOfferResponses();

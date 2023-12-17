@@ -66,7 +66,8 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
-                        .withBody(new String(Files.readAllBytes(Paths.get("src/integration/resources/pracujplhtml.html"))))));
+                        .withBody(new String(Files.readAllBytes(Paths.get("src/integration/resources/pracujpl.html"))))));
+
         wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
