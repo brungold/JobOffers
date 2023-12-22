@@ -57,17 +57,15 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
     @Test
     public void should_go_through_the_job_offers_application() throws Exception {
         // step 1: there are no offers in external HTTP server
-        // GET https://nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
-        // GET 2 https://it.pracuj.pl:433/praca/junior%20java;kw/warszawa;wp?rd=30
-
         // given && when && then
-
+        // GET  https://it.pracuj.pl:433/praca/junior%20java;kw/warszawa;wp?rd=30
         wireMockServerForPracuj.stubFor(WireMock.get("/praca/junior%20java;kw/warszawa;wp?rd=30")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
                         .withBody(new String(Files.readAllBytes(Paths.get("src/integration/resources/pracujpl.html"))))));
 
+        // GET https://nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
         wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())

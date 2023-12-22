@@ -12,6 +12,7 @@ import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
@@ -82,20 +83,18 @@ public class OfferHttpPracujPl implements OfferFetchable {
         return PracujPlService.filterBySeniorityTechnologyAndPlaceInUrl(jobOffers);
     }
 
-    // https://it.pracuj.pl:433/praca/junior%20java;kw/warszawa;wp?rd=30
     private String buildUrl() {
-        // String path = "/praca/junior%20java;kw"; - %20 bez encodowania daje spacje
         String path = "/praca/junior java;kw";
         String city = "warszawa;wp";
         String queryParamName = "rd";
         String queryParamValue = "30";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri)
+        UriComponents builder = UriComponentsBuilder
+                .fromHttpUrl(uri)
                 .port(port)
                 .path(path)
                 .pathSegment(city)
                 .queryParam(queryParamName, queryParamValue)
-                .encode();
-
+                .build();
         return builder.toUriString();
     }
 }
