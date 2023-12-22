@@ -3,9 +3,7 @@ package com.joboffers.scheduler;
 import com.joboffers.BaseIntegrationTest;
 import com.joboffers.JobOffersSpringBootApplication;
 import com.joboffers.domain.offer.OfferFetchable;
-import com.joboffers.domain.offer.OfferService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -28,10 +26,10 @@ public class OfferHttpSchedulerTest extends BaseIntegrationTest {
 
     @Test
     public void should_run_http_client_offers_fetching_exactly_given_times() {
-        await().atMost(Duration.ofSeconds(5))
+        await().atMost(Duration.ofSeconds(2))
                 .untilAsserted(() -> {
-                    verify(remoteOfferClient, times(1)).fetchAllOffers();
-                    verify(remoteOfferClientPracujPl, times(1)).fetchAllOffers();
+                    verify(remoteOfferClient, times(2)).fetchAllOffers();
+                    verify(remoteOfferClientPracujPl, times(2)).fetchAllOffers();
                 });
         }
 }

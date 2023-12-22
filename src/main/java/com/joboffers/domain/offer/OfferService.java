@@ -29,6 +29,7 @@ public class OfferService {
                 .collect(Collectors.toList());
     }
 
+
     private List<Offer> fetchAllOffersFromPracujPl() {
         return pracujPlOfferClient.fetchAllOffers()
                 .stream()

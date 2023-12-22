@@ -55,7 +55,6 @@ public class OfferHttpClientConfig {
     @Bean
     public OfferFetchable remoteOfferClientPracujPl (
             @Qualifier("restTemplatePracujPl") RestTemplate pracujPlRestTemplate,
-            PracujPlService pracujPlService,
             @Value("${offer.http.client.pracujpl.uri:http://example.com}") String uri,
             @Value("${offer.http.client.pracujpl.port:443}") int port) {
         return new OfferHttpPracujPl(pracujPlRestTemplate, uri , port);
