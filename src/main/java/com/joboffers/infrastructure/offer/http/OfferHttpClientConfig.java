@@ -3,7 +3,6 @@ package com.joboffers.infrastructure.offer.http;
 import com.joboffers.domain.offer.OfferFetchable;
 import com.joboffers.infrastructure.offer.http.nofluffjobsclient.OfferHttpClient;
 import com.joboffers.infrastructure.offer.http.pracujplscrapperclient.OfferHttpPracujPl;
-import com.joboffers.infrastructure.offer.http.pracujplscrapperclient.PracujPlService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import java.time.Duration;

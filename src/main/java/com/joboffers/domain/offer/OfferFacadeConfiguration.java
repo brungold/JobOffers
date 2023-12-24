@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 public class OfferFacadeConfiguration {
 
     @Bean
-
     OfferFacade offerFacade(@Qualifier("remoteOfferClientPracujPl") OfferFetchable pracujPlOfferClient,
                             @Qualifier("remoteOfferClient") OfferFetchable noFluffJobsOfferClient,
                             OfferRepository repository) {
