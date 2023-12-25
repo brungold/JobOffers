@@ -173,18 +173,23 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         // given && when && then
         //https: //nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
         //http://localhost:51805/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
+        wireMockServerForPracuj.stubFor(WireMock.get("/praca/junior%20java;kw/warszawa;wp?rd=30")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(new String(Files.readAllBytes(Paths.get("src/integration/resources/pracujpl-one-offer.html"))))));
+
         wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json; charset=UTF-8")
                         .withBody(bodyWithTwoOffersJson())));
 
-
         // step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
         // given && when
         List<OfferResponseDto> responseTwoNewOffers = offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
         // then
-        assertThat(responseTwoNewOffers).hasSize(2);
+        assertThat(responseTwoNewOffers).hasSize(3);
 
 
         // step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers with ids: 1000 and 2000
@@ -197,12 +202,14 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         String jsonWithTwoOffers = performGetTwoOffersMvcResult.getResponse().getContentAsString();
         List<OfferResponseDto> twoOffers = objectMapper.readValue(jsonWithTwoOffers, new TypeReference<>() {
         });
-        assertThat(twoOffers).hasSize(2);
+        assertThat(twoOffers).hasSize(3);
         OfferResponseDto expectedOfferNoOne = twoOffers.get(0);
         OfferResponseDto expectedOfferNoTwo = twoOffers.get(1);
+        OfferResponseDto expectedOfferNoThee = twoOffers.get(2);
         assertThat(twoOffers).containsExactlyInAnyOrder(
                 new OfferResponseDto(expectedOfferNoOne.id(), expectedOfferNoOne.companyName(), expectedOfferNoOne.position(), expectedOfferNoOne.salary(), expectedOfferNoOne.offerUrl()),
-                new OfferResponseDto(expectedOfferNoTwo.id(), expectedOfferNoTwo.companyName(), expectedOfferNoTwo.position(), expectedOfferNoTwo.salary(), expectedOfferNoTwo.offerUrl())
+                new OfferResponseDto(expectedOfferNoTwo.id(), expectedOfferNoTwo.companyName(), expectedOfferNoTwo.position(), expectedOfferNoTwo.salary(), expectedOfferNoTwo.offerUrl()),
+                new OfferResponseDto(expectedOfferNoThee.id(), expectedOfferNoThee.companyName(), expectedOfferNoThee.position(), expectedOfferNoThee.salary(), expectedOfferNoThee.offerUrl())
         );
 
 
@@ -241,6 +248,13 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
 
         // step 13: there are 2 new offers in external HTTP server
         // given && when && then
+        wireMockServerForPracuj.stubFor(WireMock.get("/praca/junior%20java;kw/warszawa;wp?rd=30")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(new String(Files.readAllBytes(Paths.get("src/integration/resources/pracujpl-one-offer.html"))))));
+
+
         wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
@@ -265,7 +279,7 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         String jsonWithFourOffers = performGetFourOffersMvcResult.getResponse().getContentAsString();
         List<OfferResponseDto> fourOffers = objectMapper.readValue(jsonWithFourOffers, new TypeReference<>() {
         });
-        assertThat(fourOffers).hasSize(4);
+        assertThat(fourOffers).hasSize(5);
         OfferResponseDto expectedOfferNoThree = twoNewOffers.get(0);
         OfferResponseDto expectedOfferNoFour = twoNewOffers.get(1);
         assertThat(fourOffers).contains(
@@ -318,7 +332,7 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
                 .getContentAsString();
         List<OfferResponseDto> parsedJsonWithOneOffer = objectMapper.readValue(oneOfferJson, new TypeReference<>() {
         });
-        assertThat(parsedJsonWithOneOffer).hasSize(5);
+        assertThat(parsedJsonWithOneOffer).hasSize(6);
         assertThat(parsedJsonWithOneOffer.stream().map(OfferResponseDto::id)).contains(id);
     }
 }
