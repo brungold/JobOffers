@@ -6,11 +6,13 @@ import java.util.List;
 
 public class OfferFacadeTestConfiguration {
 
-    private final InMemoryOfferFetchable offerFetchable;
-    private final InMemoryOfferRepository offerRepository;
+    private final InMemoryOfferFetchable noFluffJobsOfferClient;
 
+    private final InMemoryOfferFetchable pracujPlOfferClient;
+
+    private final InMemoryOfferRepository offerRepository;
     OfferFacadeTestConfiguration() {
-        this.offerFetchable = new InMemoryOfferFetchable(
+        this.noFluffJobsOfferClient = new InMemoryOfferFetchable(
                 List.of(
                         new JobOfferResponse("Junior","Asseco" , "5000", "www.oferta1.com/1"),
                         new JobOfferResponse("Junior", "Intel", "6000", "www.oferta2.com/2"),
@@ -18,16 +20,23 @@ public class OfferFacadeTestConfiguration {
                         new JobOfferResponse("Junior", "Comarch", "3000", "www.oferta4.com/4")
                 )
         );
+        this.pracujPlOfferClient = new InMemoryOfferFetchable(
+                List.of(
+
+                )
+        );
         this.offerRepository = new InMemoryOfferRepository();
     }
 
-    OfferFacadeTestConfiguration(List<JobOfferResponse> clientOffers) {
-        this.offerFetchable = new InMemoryOfferFetchable(clientOffers);
-        this.offerRepository = new InMemoryOfferRepository();
+    public OfferFacadeTestConfiguration(InMemoryOfferFetchable noFluffJobsOfferClient, InMemoryOfferFetchable pracujPlOfferClient, InMemoryOfferRepository offerRepository) {
+        this.noFluffJobsOfferClient = noFluffJobsOfferClient;
+        this.pracujPlOfferClient = pracujPlOfferClient;
+        this.offerRepository = offerRepository;
     }
+
 
     OfferFacade offerFacadeForTests() {
-        return new OfferFacade(offerRepository, new OfferService(offerFetchable, offerFetchable, offerRepository));
+        return new OfferFacade(offerRepository, new OfferService(noFluffJobsOfferClient, pracujPlOfferClient, offerRepository));
     }
 }
 

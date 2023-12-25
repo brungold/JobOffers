@@ -68,7 +68,7 @@ class OfferFacadeTest {
     @Test
     public void should_throw_not_found_exception_when_offer_not_found() {
         //given
-        OfferFacade offerFacade = new OfferFacadeTestConfiguration(List.of()).offerFacadeForTests();
+        OfferFacade offerFacade = new OfferFacadeTestConfiguration().offerFacadeForTests();
         assertThat(offerFacade.findAllOffers()).isEmpty();
 
         //when
@@ -83,7 +83,7 @@ class OfferFacadeTest {
     @Test
     public void should_throw_duplicate_exception_when_offer_url_exists() {
         //given
-        OfferFacade offerFacade = new OfferFacadeTestConfiguration(List.of()).offerFacadeForTests();
+        OfferFacade offerFacade = new OfferFacadeTestConfiguration().offerFacadeForTests();
         OfferResponseDto offerResponseDto = offerFacade.saveOffer(new OfferRequestDto("Avast", "junior", "5500", "www.oferta100.com/100"));
         String offerId = offerResponseDto.id();
         assertThat(offerFacade.findOfferById(offerId).id()).isEqualTo(offerId);
