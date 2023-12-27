@@ -38,3 +38,54 @@ Endpoints
 /token - POST: Provides a token to the user.
 
 /offers - POST: Creates a new job offer.
+
+
+
+Technology:
+
+Java 17, Log4j2, Lombok, Maven
+
+
+Spring Boot (Various modules used in the project):
+
+-Web (RestControllers): Implementation of controller layer handling HTTP requests.
+
+-Test: Support for unit and integration testing.
+
+-Data Mongodb: Integration with MongoDB for database operation handling.
+
+-Validation: Input data validation.
+
+-Security + JWT: Ensuring security and authorization using JWT tokens.
+
+
+Spring Scheduler:
+Task scheduling mechanism used for cyclically checking for new job offers.
+
+
+Database:
+MongoDB + MongoExpress: NoSQL database, including a tool for managing MongoDB (MongoExpress).
+
+Docker & Docker-Compose & Docker Desktop:
+Containerization of the application and environment.
+
+
+Redis & Jedis & Redis-Commander:
+Key-value database used for caching data in memory (cache).
+
+
+Unit Tests:
+JUnit5, Mockito, AssertJ:
+Frameworks for unit testing, object mocking, and assertions.
+
+
+Integration Tests:
+
+Wiremock:
+Tool for creating artificial endpoints for integration testing.
+
+Testcontainers:
+Library supporting integration testing, allowing for running Docker containers for testing resources.
+
+SpringBootTest, MockMvc, SpringSecurityTest:
+Tests that verify the interaction between different components of the system.
