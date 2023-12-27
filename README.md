@@ -30,7 +30,11 @@ Job Offer Attributes:
 Each job offer includes a link to the listing, job position name, company name, and salary information (which can be provided in a range).
 Endpoints
 /offers - GET: Retrieves job offers.
+
 /offers/{id} - GET: Finds a job offer by its identifier.
+
 /register - POST: Registers a new user.
+
 /token - POST: Provides a token to the user.
+
 /offers - POST: Creates a new job offer.
