@@ -1,4 +1,4 @@
-package com.joboffers.infrastructure.offer.http.dto;
+package com.joboffers.infrastructure.offer.http.nofluffjobsclient.dto;
 
 import java.util.List;
 

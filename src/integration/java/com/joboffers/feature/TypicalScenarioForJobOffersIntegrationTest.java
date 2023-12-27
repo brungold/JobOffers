@@ -20,9 +20,10 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -46,13 +47,25 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         registry.add("offer.http.client.config.port", () -> wireMockServer.getPort());
     }
 
+    @DynamicPropertySource
+    public static void propertyOverridePracujPl(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+        registry.add("offer.http.client.pracujpl.uri", () -> WIRE_MOCK_HOST);
+        registry.add("offer.http.client.pracujpl.port", () -> wireMockServerForPracuj.getPort());
+    }
+
     @Test
     public void should_go_through_the_job_offers_application() throws Exception {
         // step 1: there are no offers in external HTTP server
-        // (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
-        //  GET https://nofluffjobs.com/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
-        //    GET https://nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
         // given && when && then
+        // GET  https://it.pracuj.pl:433/praca/junior%20java;kw/warszawa;wp?rd=30
+        wireMockServerForPracuj.stubFor(WireMock.get("/praca/junior%20java;kw/warszawa;wp?rd=30")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(new String(Files.readAllBytes(Paths.get("src/integration/resources/pracujpl.html"))))));
+
+        // GET https://nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
         wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
@@ -160,18 +173,23 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         // given && when && then
         //https: //nofluffjobs.com:433/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
         //http://localhost:51805/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl
+        wireMockServerForPracuj.stubFor(WireMock.get("/praca/junior%20java;kw/warszawa;wp?rd=30")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(new String(Files.readAllBytes(Paths.get("src/integration/resources/pracujpl-one-offer.html"))))));
+
         wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json; charset=UTF-8")
                         .withBody(bodyWithTwoOffersJson())));
 
-
         // step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
         // given && when
         List<OfferResponseDto> responseTwoNewOffers = offerHttpScheduler.fetchAllOffersAndSaveAllIfNotExists();
         // then
-        assertThat(responseTwoNewOffers).hasSize(2);
+        assertThat(responseTwoNewOffers).hasSize(3);
 
 
         // step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers with ids: 1000 and 2000
@@ -184,12 +202,14 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         String jsonWithTwoOffers = performGetTwoOffersMvcResult.getResponse().getContentAsString();
         List<OfferResponseDto> twoOffers = objectMapper.readValue(jsonWithTwoOffers, new TypeReference<>() {
         });
-        assertThat(twoOffers).hasSize(2);
+        assertThat(twoOffers).hasSize(3);
         OfferResponseDto expectedOfferNoOne = twoOffers.get(0);
         OfferResponseDto expectedOfferNoTwo = twoOffers.get(1);
+        OfferResponseDto expectedOfferNoThee = twoOffers.get(2);
         assertThat(twoOffers).containsExactlyInAnyOrder(
                 new OfferResponseDto(expectedOfferNoOne.id(), expectedOfferNoOne.companyName(), expectedOfferNoOne.position(), expectedOfferNoOne.salary(), expectedOfferNoOne.offerUrl()),
-                new OfferResponseDto(expectedOfferNoTwo.id(), expectedOfferNoTwo.companyName(), expectedOfferNoTwo.position(), expectedOfferNoTwo.salary(), expectedOfferNoTwo.offerUrl())
+                new OfferResponseDto(expectedOfferNoTwo.id(), expectedOfferNoTwo.companyName(), expectedOfferNoTwo.position(), expectedOfferNoTwo.salary(), expectedOfferNoTwo.offerUrl()),
+                new OfferResponseDto(expectedOfferNoThee.id(), expectedOfferNoThee.companyName(), expectedOfferNoThee.position(), expectedOfferNoThee.salary(), expectedOfferNoThee.offerUrl())
         );
 
 
@@ -228,6 +248,13 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
 
         // step 13: there are 2 new offers in external HTTP server
         // given && when && then
+        wireMockServerForPracuj.stubFor(WireMock.get("/praca/junior%20java;kw/warszawa;wp?rd=30")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(new String(Files.readAllBytes(Paths.get("src/integration/resources/pracujpl-one-offer.html"))))));
+
+
         wireMockServer.stubFor(WireMock.get("/api/posting?salaryCurrency=PLN&salaryPeriod=month&region=pl")
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
@@ -252,7 +279,7 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
         String jsonWithFourOffers = performGetFourOffersMvcResult.getResponse().getContentAsString();
         List<OfferResponseDto> fourOffers = objectMapper.readValue(jsonWithFourOffers, new TypeReference<>() {
         });
-        assertThat(fourOffers).hasSize(4);
+        assertThat(fourOffers).hasSize(5);
         OfferResponseDto expectedOfferNoThree = twoNewOffers.get(0);
         OfferResponseDto expectedOfferNoFour = twoNewOffers.get(1);
         assertThat(fourOffers).contains(
@@ -305,7 +332,7 @@ public class TypicalScenarioForJobOffersIntegrationTest extends BaseIntegrationT
                 .getContentAsString();
         List<OfferResponseDto> parsedJsonWithOneOffer = objectMapper.readValue(oneOfferJson, new TypeReference<>() {
         });
-        assertThat(parsedJsonWithOneOffer).hasSize(5);
+        assertThat(parsedJsonWithOneOffer).hasSize(6);
         assertThat(parsedJsonWithOneOffer.stream().map(OfferResponseDto::id)).contains(id);
     }
 }
