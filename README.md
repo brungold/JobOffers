@@ -46,6 +46,14 @@ Technology:
 Java 17, Log4j2, Lombok, Maven
 
 
+RestTemplate, JSON, HTTP, MockMvc:
+
+-RestTemplate - Tool for communication with REST services.
+-JSON - Data format for transmitting information between server and client.
+-HTTP - Communication protocol used in the application.
+-MockMvc - Framework for testing controllers without the need to start the server.
+
+
 Spring Boot (Various modules used in the project):
 
 -Web (RestControllers): Implementation of controller layer handling HTTP requests.
