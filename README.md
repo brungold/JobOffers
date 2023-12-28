@@ -2,11 +2,14 @@
 
 "JobOffers" is a Spring Boot web application that allows users to efficiently browse job offers from popular platforms such as NoFluffJobs and Pracuj.pl. The application, using a scheduler every three hours, checks whether new job offers have appeared. Users are required to register in the application, and upon registration, a token will be generated for them, providing access to job offers and the ability to add their own listings.
 
+
 ## Key Features
 
 ### Fetching Offers from NoFluffJobs and Pracuj.pl:
 
-- The program employs two HTTP clients to retrieve job offers from NoFluffJobs and Pracuj.pl platforms.
+- The program employs two different methods for fetching job offers:
+  - **NoFluffJobs:** The application connects to NoFluffJobs through API calls.
+  - **Pracuj.pl:** Job offers are scraped from Pracuj.pl using web scraping techniques with JSoup.
 
 ### Authorization:
 
