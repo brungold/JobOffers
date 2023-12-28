@@ -59,6 +59,10 @@
 - *HTTP:* Communication protocol used in the application.
 - *MockMvc:* Framework for testing controllers without the need to start the server.
 
+### JSoup:
+
+- Java library for working with real-world HTML.
+
 ### Spring Boot (Various modules used in the project):
 
 - *Web (RestControllers):* Implementation of the controller layer handling HTTP requests.
